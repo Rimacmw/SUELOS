@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WRM - Clasificación SUCS ASTM D2487</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Cabecera */
+        header {
+            background-color: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        /* Contenedor Principal */
+        .main-container {
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .grid-calc {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Tarjetas */
+        .card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            color: var(--primary);
+        }
+
+        /* Formulario */
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--accent);
+        }
+
+        /* Resultados */
+        #res_txt {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Consolas', monospace;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 250px;
+            white-space: pre-wrap;
+        }
+
+        /* Tabla de Historial */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .bold { font-weight: bold; color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Sistema Profesional de Mecánica de Suelos</h1>
+    <p>WRM - CLASIFICACIÓN SUCS ASTM D2487</p>
+</header>
+
+<div class="main-container">
+    
+    <div class="grid-calc">
+        <!-- Entrada de Datos -->
+        <div class="card">
+            <h3>Parámetros de Entrada</h3>
+            <div class="input-group">
+                <label>Pasa #200 (%):</label>
+                <input type="number" id="p200" step="0.01" placeholder="Ej: 45">
+            </div>
+            <div class="input-group">
+                <label>Pasa #4 (%):</label>
+                <input type="number" id="p4" step="0.01" placeholder="Ej: 80">
+            </div>
+            <div class="input-group">
+                <label>Límite Líquido (LL):</label>
+                <input type="number" id="ll" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Límite Plástico (LP):</label>
+                <input type="number" id="lp" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>D60 (mm):</label>
+                <input type="number" id="d60" step="0.001">
+            </div>
+            <div class="input-group">
+                <label>D30 (mm):</label>
+                <input type="number" id="d30" step="0.001">
+            </div>
+            <div class="input-group">
+                <label>D10 (mm):</label>
+                <input type="number" id="d10" step="0.001">
+            </div>
+            <button onclick="ejecutarAnalisis()">ANALIZAR SUELO</button>
+        </div>
+
+        <!-- Área de Resultados -->
+        <div class="card">
+            <h3>Análisis y Clasificación</h3>
+            <div id="res_txt">Los resultados aparecerán aquí tras el análisis...</div>
+        </div>
+    </div>
+
+    <!-- Historial -->
+    <div class="card">
+        <h3>Registro de Muestras (Historial)</h3>
+        <div class="table-container">
+            <table id="tabla_historial">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>#200</th><th>#4</th><th>LL</th><th>LP</th><th>IP</th><th>Cu</th><th>Cc</th><th>Símbolo</th><th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas insertadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let registroDatos = [];
+
+    function ejecutarAnalisis() {
+        try {
+            // Captura de valores
+            const p200 = parseFloat(document.getElementById('p200').value);
+            const p4 = parseFloat(document.getElementById('p4').value);
+            const ll = parseFloat(document.getElementById('ll').value);
+            const lp = parseFloat(document.getElementById('lp').value);
+            const d60 = parseFloat(document.getElementById('d60').value);
+            const d30 = parseFloat(document.getElementById('d30').value);
+            const d10 = parseFloat(document.getElementById('d10').value);
+
+            if (isNaN(p200) || isNaN(p4)) {
+                alert("Por favor, ingrese al menos el porcentaje que pasa los tamices #200 y #4.");
+                return;
+            }
+
+            // Cálculos base
+            const ip = (!isNaN(ll) && !isNaN(lp)) ? (ll - lp) : null;
+            const cu = (d60 && d10) ? (d60 / d10) : null;
+            const cc = (d30 && d60 && d10) ? (Math.pow(d30, 2) / (d60 * d10)) : null;
+            const linea_a = (!isNaN(ll)) ? 0.73 * (ll - 20) : null;
+
+            let simb = "";
+            let desc = "";
+
+            // --- LÓGICA DE SUELOS GRUESOS (Pasa #200 < 50%) ---
+            if (p200 < 50) {
+                let fraccion_gruesa = 100 - p200;
+                let grava = 100 - p4;
+                let arena = fraccion_gruesa - grava;
+                let pref = (grava > arena) ? "G" : "S";
+                let tipo = (pref === "G") ? "Grava" : "Arena";
+
+                let bien_grad = false;
+                if (cu && cc) {
+                    bien_grad = (pref === "G") ? (cu >= 4 && cc >= 1 && cc <= 3) : (cu >= 6 && cc >= 1 && cc <= 3);
+                }
+                let grad = bien_grad ? "W" : "P";
+
+                let es_C = (ip !== null && ip > 7 && ip >= linea_a);
+                let es_M = (ip !== null && (ip < 4 || ip < linea_a));
+                let es_CL_ML = (ip !== null && ip >= 4 && ip <= 7 && ip >= linea_a);
+                let suf_fino = es_C ? "C" : (es_M ? "M" : (es_CL_ML ? "C-M" : ""));
+
+                if (p200 < 5) {
+                    simb = pref + grad;
+                    desc = `${tipo} ${bien_grad ? 'bien' : 'pobremente'} graduada.`;
+                } else if (p200 > 12) {
+                    simb = pref + (suf_fino || "M");
+                    desc = `${tipo} ${es_C ? 'arcillosa' : es_M ? 'limosa' : 'con finos'}.`;
+                } else {
+                    simb = `${pref}${grad}-${pref}${suf_fino || 'M'}`;
+                    desc = `${tipo} ${bien_grad ? 'bien' : 'pobremente'} graduada con finos.`;
+                }
+            } 
+            // --- LÓGICA DE SUELOS FINOS (Pasa #200 >= 50%) ---
+            else {
+                if (isNaN(ll)) {
+                    simb = "Fino (NP)";
+                    desc = "Suelo fino no plástico.";
+                } else if (ll < 50) {
+                    if (ip >= 4 && ip <= 7 && ip >= linea_a) { 
+                        simb = "CL-ML"; desc = "Arcilla limosa de baja plasticidad."; 
+                    } else if (ip > 7 && ip >= linea_a) { 
+                        simb = "CL"; desc = "Arcilla magra."; 
+                    } else { 
+                        simb = "ML"; desc = "Limo de baja plasticidad, limos inorgánicos."; 
+                    }
+                } else {
+                    simb = (ip >= linea_a) ? "CH" : "MH";
+                    desc = (ip >= linea_a ? "Arcilla grasa" : "Limo elástico") + " de alta compresibilidad.";
+                }
+            }
+
+            // Mostrar en pantalla
+            const resHTML = `SÍMBOLO DE GRUPO: ${simb}\n` +
+                          `ÍNDICE PLASTICIDAD: ${ip !== null ? ip.toFixed(2) : 'NP'}\n` +
+                          `COEF. UNIFORMIDAD (Cu): ${cu ? cu.toFixed(2) : '-'}\n` +
+                          `COEF. CURVATURA (Cc): ${cc ? cc.toFixed(2) : '-'}\n` +
+                          `------------------------------------------\n` +
+                          `DESCRIPCIÓN: ${desc}`;
+            
+            document.getElementById('res_txt').innerText = resHTML;
+
+            // Guardar en historial
+            const nuevaEntrada = {
+                id: registroDatos.length + 1,
+                p200, p4, ll: ll || '-', lp: lp || '-',
+                ip: ip !== null ? ip.toFixed(2) : 'NP',
+                cu: cu ? cu.toFixed(2) : '-',
+                cc: cc ? cc.toFixed(2) : '-',
+                simb, desc
+            };
+            registroDatos.push(nuevaEntrada);
+            actualizarTabla();
+
+        } catch (error) {
+            alert("Error en los datos: Verifique que los valores sean numéricos.");
+        }
+    }
+
+    function actualizarTabla() {
+        const tbody = document.querySelector("#tabla_historial tbody");
+        tbody.innerHTML = "";
+        registroDatos.forEach(item => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.p200}%</td>
+                <td>${item.p4}%</td>
+                <td>${item.ll}</td>
+                <td>${item.lp}</td>
+                <td>${item.ip}</td>
+                <td>${item.cu}</td>
+                <td>${item.cc}</td>
+                <td class="bold">${item.simb}</td>
+                <td style="text-align:left">${item.desc}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+</script>
+
+</body>
+</html>
